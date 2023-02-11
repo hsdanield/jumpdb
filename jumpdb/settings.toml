@@ -1,0 +1,38 @@
+name = "jumpdb"
+
+[datasources.oracle.dataminer]
+drivername = "oracle+cx_oracle"
+username = "TESTE"
+password = "TESTE"
+host = "localhost"
+database = "TESTE"
+port = 1521
+query = ""
+
+[datasources.oracle.unpta]
+drivername = "oracle+cx_oracle"
+username = "TESTE2"
+password = "TESTE2"
+host = "localhost"
+database = "TESTE2"
+port = 1521
+query = ""
+
+[datasources.oracle.practical]
+drivername = "oracle+cx_oracle"
+username = "practical"
+password = "practical"
+host = "localhost"
+database = "NEXUS"
+port = 1521
+query = ""
+
+[datasources.mysql.dataminer]
+drivername = "mysql+pymysql"
+username = "TESTE3"
+password = "TESTE3"
+host = "localhost"
+database = "TESTE4"
+port = 3306
+query = { 'ssl_check_hostname' = 'false', "charset" = "utf8mb4" }
+
