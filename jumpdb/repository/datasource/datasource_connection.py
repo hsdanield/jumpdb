@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy.orm import Session
-
+from sqlalchemy.exc import NoSuchModuleError, OperationalError
 from jumpdb.configs.config import settings
 
 
@@ -19,10 +19,25 @@ class DatasourceConnection:
 
     def __create_engine(self):
         try:
-            return create_engine(self.__get_url())
+            return create_engine(self.__get_url(), echo=False)
 
         except Exception as e:
             print(f"Erro ao criar engine {e}")
+
+    def check_connection(self):
+        try:
+            with self.__engine.connect():
+                return True
+        except NoSuchModuleError:
+            print(f"No such module error: Could not create engine with connection in database{self.__database}")
+            return False
+        except OperationalError:
+            print(f"Operational error: Could not connect to database with connection database {self.__database}")
+            return False
+        except Exception as e:
+            print(f"Unknown error: {e}")
+
+        return False
 
     def __get_url(self):
         return URL.create(
@@ -36,7 +51,7 @@ class DatasourceConnection:
         )
 
     def get_session(self):
-        return Session(self.__engine)
+        return Session(bind=self.__engine)
 
     def get_engine(self):
         return self.__engine

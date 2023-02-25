@@ -29,8 +29,8 @@ query = ""
 
 [datasources.mysql.dataminer]
 drivername = "mysql+pymysql"
-username = "TESTE3"
-password = "TESTE3"
+username = "root"
+password = "root"
 host = "localhost"
 database = "TESTE4"
 port = 3306

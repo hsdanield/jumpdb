@@ -3,13 +3,14 @@ from typing import Optional, List
 import typer
 from rich.console import Console
 from rich.table import Table
-from sqlalchemy import Table
 
-from jumpdb.service.connection_service import (get_columns,
-                                               get_pk_constraint,
-                                               get_foreign_keys,
-                                               get_indexes,
-                                               mapping_column_type)
+from jumpdb.service.inserpector.connection_service import (get_columns,
+                                                           get_pk_constraint,
+                                                           get_foreign_keys,
+                                                           get_indexes,
+                                                           mapping_column_type)
+from jumpdb.repository.extract.extract_repository import DatasourceConnection, OriginDatabaseRepository, \
+    DestinyDatabaseRepository, ContractDatabaseRepository
 
 from jumpdb.utils.sql_parser_util import query_create_table
 from jumpdb.utils.table_util import header_columns, header_pks, header_fks, header_indexes
@@ -150,7 +151,39 @@ def mapping(
                                          name=name,
                                          content=content)
 
-
     query = query_create_table(new_table, columns=mapping_column)
 
     console.print(query)
+
+
+@main.command("etl_database")
+def origin_destiny(
+        name_origin: str,
+        name_destiny: str,
+        type_origin: str = typer.Option(...),
+        type_destiny: str = typer.Option(...),
+        select: str = typer.Option(...),
+        table_destiny=typer.Option(...),
+
+):
+    name_origin.title()
+
+    table = Table(title="ETL DATABASE")
+    table.add_column("Origin", style="magenta")
+    table.add_column("Destiny", style="magenta")
+
+    table.add_row(name_origin, name_destiny)
+    table.add_row(type_origin, type_destiny)
+
+    stmt_oracle = """data_dest"""
+
+    conn_origin = DatasourceConnection(database=type_origin, name=name_origin)
+    conn_destiny = DatasourceConnection(database=type_destiny, name=name_destiny)
+    origin = OriginDatabaseRepository(ds_connection=conn_origin)
+    destiny = DestinyDatabaseRepository(ds_connection=conn_destiny)
+    contract = ContractDatabaseRepository(origin_connection=origin, destiny_connection=destiny)
+    columns, values = contract.select_origin(select)
+    row_count = contract.insert_destiny(table=table_destiny, columns=columns, values=values)
+
+    console.print(table)
+    console.print(f"Total de linhas inseridas: {row_count}")
