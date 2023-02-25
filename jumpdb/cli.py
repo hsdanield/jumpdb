@@ -156,7 +156,7 @@ def mapping(
     console.print(query)
 
 
-@main.command("etl_database")
+@main.command("etl")
 def origin_destiny(
         name_origin: str,
         name_destiny: str,

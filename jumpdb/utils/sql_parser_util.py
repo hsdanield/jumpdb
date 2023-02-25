@@ -117,3 +117,10 @@ def query_create_table(table, columns):
                                                                                   ColumnsMandatory.DTC_FIM,
                                                                                   ColumnsMandatory.STS_CORRENTE,
                                                                                   create_pk(table)).upper()
+
+
+def create_query_insert(table, columns):
+    columns_to_string = ", ".join(columns)
+    columns_param = ", ".join([str(":") + column for column in columns])
+    return f"""INSERT INTO {table} ({columns_to_string}) VALUES({columns_param})"""
+
