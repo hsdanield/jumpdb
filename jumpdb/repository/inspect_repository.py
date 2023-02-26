@@ -23,6 +23,10 @@ class DatasourceInspect:
         for column in columns:
             column["precision"] = str(column["type"].as_generic())
 
+        for column in columns:
+            for key, value in column.items():
+                column[key] = str(value)
+
         return columns
 
     def get_pk_constraint(self, table_name):

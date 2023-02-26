@@ -39,6 +39,4 @@ def exec_extract_load(origin: OriginMapping, destiny: DestinyMapping):
                              stmt=stmt_insert,
                              values=values)
 
-    return ExtractLoadMapping(origin=origin,
-                              destiny=destiny,
-                              row_count=row_count)
+    return ExtractLoadMapping(origin=origin, destiny=destiny, row_count=row_count)

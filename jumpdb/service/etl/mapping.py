@@ -17,6 +17,4 @@ class DestinyMapping(BaseModel):
 class ExtractLoadMapping(BaseModel):
     origin: OriginMapping
     destiny: DestinyMapping
-    # data: List[Dict]
-    # columns: List
     row_count: int

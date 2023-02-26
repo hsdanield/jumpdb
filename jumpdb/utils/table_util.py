@@ -12,28 +12,28 @@ def header_columns():
     ]
 
 
-def header_pks():
+def header_constraints():
     return [
+        "database",
         "name",
+        "table_name",
+        "constraint_name",
         "constrained_columns"
-    ]
-
-
-def header_fks():
-    return [
-        "name",
-        "constrained_columns",
-        "referred_schema",
-        "referred_table",
-        "referred_columns",
-        "options"
     ]
 
 
 def header_indexes():
     return [
-        "name",
-        "column_names",
+        "index_name",
         "dialect_options",
         "unique"
+    ]
+
+
+def header_fks():
+    return [
+        "referred_schema",
+        "referred_table",
+        "referred_columns",
+        "options"
     ]

@@ -4,17 +4,15 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
+from jumpdb.serializers.inspector import ColumnsIn, InspectorIn
 from jumpdb.service.inserpector.connection_service import (get_columns,
                                                            get_pk_constraint,
                                                            get_foreign_keys,
                                                            get_indexes,
                                                            mapping_column_type)
-from jumpdb.repository.extract.extract_repository import DatasourceConnection, OriginDatabaseRepository, \
-    DestinyDatabaseRepository, ContractDatabaseRepository
-
-from jumpdb.utils.sql_parser_util import query_create_table
-from jumpdb.utils.table_util import header_columns, header_pks, header_fks, header_indexes
 from jumpdb.utils.file_util import read_file
+from jumpdb.utils.sql_parser_util import query_create_table
+from jumpdb.utils.table_util import (header_columns, header_constraints, header_fks, header_indexes)
 
 main = typer.Typer(help="JumperDB Application")
 console = Console()
@@ -33,10 +31,13 @@ def columns(
        table_name: nome da tabela para busca
        filter_columns: caso não informado ira recuperar todas as colunas
     """
-    data = get_columns(database=database,
+
+    map_in = ColumnsIn(database=database,
                        name=name,
                        table_name=table_name,
                        filter_columns=filter_columns)
+
+    inspector_out = get_columns(map_in)
 
     headers = header_columns()
 
@@ -44,9 +45,9 @@ def columns(
 
     [table.add_column(header, style="magenta") for header in headers]
 
-    # Add data rows
-    for item in data:
-        row = [str(item[header]) for header in headers]
+    # # Add data rows
+    for item in inspector_out:
+        row = [str(getattr(item, header)) for header in headers]
         table.add_row(*row)
 
     console.print(table)
@@ -63,15 +64,18 @@ def pks(
        name: informar o nome cadastros em settings.toml
        table_name: nome da tabela para busca
     """
-    data = get_pk_constraint(database=database,
-                             name=name,
-                             table_name=table_name)
 
-    headers = header_pks()
+    map_in = InspectorIn(database=database, name=name, table_name=table_name)
+
+    map_out = get_pk_constraint(map_in)
+
+    headers = header_constraints()
 
     table = Table(title=f"PKS {table_name}")
     [table.add_column(header, style="magenta") for header in headers]
-    table.add_row(str(data["name"]), str(data["constrained_columns"]))
+
+    row = [str(getattr(map_out, header)) for header in headers]
+    table.add_row(*row)
 
     console.print(table)
 
@@ -87,17 +91,22 @@ def fks(
        name: informar o nome cadastros em settings.toml
        table_name: nome da tabela para busca
     """
-    data = get_foreign_keys(database=database,
-                            name=name,
-                            table_name=table_name)
 
-    headers = header_fks()
+    map_in = InspectorIn(database=database, name=name, table_name=table_name)
 
-    table = Table(title=f"PKS {table_name}")
-    [table.add_column(header, style="magenta") for header in headers]
+    map_out = get_foreign_keys(map_in)
 
-    for item in data:
-        row = [str(item[header]) for header in headers]
+    headers_constraint = header_constraints()
+    headers_fks = header_fks()
+
+    table = Table(title=f"FKS {table_name}")
+    [table.add_column(header, style="magenta") for header in [*headers_constraint, *headers_fks]]
+
+    for item in map_out:
+        row_constraint = [str(getattr(getattr(item, "constraint_out"), header)) for header in headers_constraint]
+        row_fks = [str(getattr(item, header)) for header in headers_fks]
+
+        row = [*row_constraint, *row_fks]
         table.add_row(*row)
 
     console.print(table)
@@ -115,17 +124,23 @@ def indexes(
        table_name: nome da tabela para busca
     """
 
-    data = get_indexes(database=database,
-                       name=name,
-                       table_name=table_name)
+    map_in = InspectorIn(database=database,
+                         name=name,
+                         table_name=table_name)
 
-    headers = header_indexes()
+    map_out = get_indexes(map_in)
 
-    table = Table(title=f"PKS {table_name}")
-    [table.add_column(header, style="magenta") for header in headers]
+    headers_constraint = header_constraints()
+    headers_indexes = header_indexes()
 
-    for item in data:
-        row = [str(item[header]) for header in headers]
+    table = Table(title=f"Indexes {table_name}")
+    [table.add_column(header, style="magenta") for header in [*headers_constraint, *headers_indexes]]
+
+    for item in map_out:
+        row_constraint = [str(getattr(getattr(item, "constraint_out"), header)) for header in headers_constraint]
+        row_fks = [str(getattr(item, header)) for header in headers_indexes]
+
+        row = [*row_constraint, *row_fks]
         table.add_row(*row)
 
     console.print(table)
@@ -155,35 +170,35 @@ def mapping(
 
     console.print(query)
 
-
-@main.command("etl")
-def origin_destiny(
-        name_origin: str,
-        name_destiny: str,
-        type_origin: str = typer.Option(...),
-        type_destiny: str = typer.Option(...),
-        select: str = typer.Option(...),
-        table_destiny=typer.Option(...),
-
-):
-    name_origin.title()
-
-    table = Table(title="ETL DATABASE")
-    table.add_column("Origin", style="magenta")
-    table.add_column("Destiny", style="magenta")
-
-    table.add_row(name_origin, name_destiny)
-    table.add_row(type_origin, type_destiny)
-
-    stmt_oracle = """data_dest"""
-
-    conn_origin = DatasourceConnection(database=type_origin, name=name_origin)
-    conn_destiny = DatasourceConnection(database=type_destiny, name=name_destiny)
-    origin = OriginDatabaseRepository(ds_connection=conn_origin)
-    destiny = DestinyDatabaseRepository(ds_connection=conn_destiny)
-    contract = ContractDatabaseRepository(origin_connection=origin, destiny_connection=destiny)
-    columns, values = contract.select_origin(select)
-    row_count = contract.insert_destiny(table=table_destiny, columns=columns, values=values)
-
-    console.print(table)
-    console.print(f"Total de linhas inseridas: {row_count}")
+#
+# @main.command("etl")
+# def origin_destiny(
+#         name_origin: str,
+#         name_destiny: str,
+#         type_origin: str = typer.Option(...),
+#         type_destiny: str = typer.Option(...),
+#         select: str = typer.Option(...),
+#         table_destiny=typer.Option(...),
+#
+# ):
+#     name_origin.title()
+#
+#     table = Table(title="ETL DATABASE")
+#     table.add_column("Origin", style="magenta")
+#     table.add_column("Destiny", style="magenta")
+#
+#     table.add_row(name_origin, name_destiny)
+#     table.add_row(type_origin, type_destiny)
+#
+#     stmt_oracle = """data_dest"""
+#
+#     conn_origin = DatasourceConnection(database=type_origin, name=name_origin)
+#     conn_destiny = DatasourceConnection(database=type_destiny, name=name_destiny)
+#     origin = OriginDatabaseRepository(ds_connection=conn_origin)
+#     destiny = DestinyDatabaseRepository(ds_connection=conn_destiny)
+#     contract = ContractDatabaseRepository(origin_connection=origin, destiny_connection=destiny)
+#     columns, values = contract.select_origin(select)
+#     row_count = contract.insert_destiny(table=table_destiny, columns=columns, values=values)
+#
+#     console.print(table)
+#     console.print(f"Total de linhas inseridas: {row_count}")
