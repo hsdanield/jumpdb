@@ -1,12 +1,9 @@
 from fastapi import FastAPI
 
-from jumpdb.api.routes.etl import etl_database
-from jumpdb.api.routes.inspector import inspector
+from jumpdb.api.routes.api_router import api_router
 
-api = FastAPI()
-
-api.include_router(etl_database.router, tags=['etl_database'])
-api.include_router(inspector.router, tags=['inspector'])
+api = FastAPI(title="jumpdb API")
+api.include_router(api_router)
 
 if __name__ == "__main__":
     import uvicorn
