@@ -1,8 +1,10 @@
 # jumpdb
 
-### Objetivo: inspeção/investigação de tabelas e automatização para criação de scripts de banco de dados relacionais.
+### Objetivo: 
+1. Inspeção/investigação de tabelas e automatização para criação de scripts de banco de dados relacionais. OBS: Compativel com oracle e mysql. 
+2. Extração, Transformação e Carregamento de dados através de banco de dados relacionais e arquivos.
 
-Compativel com oracle e mysql. 
+
 
 
 A seguir temos a descrição dos parâmetros utilizados e alguns exemplos utilizados no console jumpdb
