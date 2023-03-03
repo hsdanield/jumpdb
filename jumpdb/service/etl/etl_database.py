@@ -2,7 +2,7 @@ from jumpdb.repository.extract.extract_repository import ExtractRepository
 from jumpdb.repository.load.load_repository import LoadRepository
 from jumpdb.serializers.etl_database_serial import (OriginMapping,
                                                     DestinyMapping,
-                                                    ExtractLoadMapping,
+                                                    ExtractLoadMappingOut,
                                                     ExtractSelectMapping)
 from jumpdb.utils.sql_parser_util import create_query_insert
 
@@ -52,4 +52,4 @@ def exec_extract_load(origin: OriginMapping, destiny: DestinyMapping):
                              stmt=stmt_insert,
                              values=values)
 
-    return ExtractLoadMapping(origin=origin, destiny=destiny, row_count=row_count)
+    return ExtractLoadMappingOut(origin=origin, destiny=destiny, row_count=row_count)

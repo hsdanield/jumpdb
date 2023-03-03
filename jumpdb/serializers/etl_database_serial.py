@@ -15,7 +15,12 @@ class DestinyMapping(BaseModel):
     table: str
 
 
-class ExtractLoadMapping(BaseModel):
+class ExtractLoadMappingIn(BaseModel):
+    origin: OriginMapping
+    destiny: DestinyMapping
+
+
+class ExtractLoadMappingOut(BaseModel):
     origin: OriginMapping
     destiny: DestinyMapping
     row_count: int
