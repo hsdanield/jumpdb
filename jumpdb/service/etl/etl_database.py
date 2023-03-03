@@ -1,6 +1,9 @@
 from jumpdb.repository.extract.extract_repository import ExtractRepository
 from jumpdb.repository.load.load_repository import LoadRepository
-from jumpdb.service.etl.mapping import OriginMapping, DestinyMapping, ExtractLoadMapping
+from jumpdb.serializers.etl_database_serial import (OriginMapping,
+                                                    DestinyMapping,
+                                                    ExtractLoadMapping,
+                                                    ExtractSelectMapping)
 from jumpdb.utils.sql_parser_util import create_query_insert
 
 
@@ -23,6 +26,16 @@ def __load_table(database, name, stmt, values) -> int:
 
     if load_repository.check_connection():
         data = load_repository.insert(stmt, values)
+
+    return data
+
+
+def extract_select(origin: OriginMapping):
+    columns, values = __extract_select(database=origin.database,
+                                       name=origin.name,
+                                       stmt=origin.select)
+
+    data = ExtractSelectMapping(columns=columns, data=values, row_count=len(values))
 
     return data
 

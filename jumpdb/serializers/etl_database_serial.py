@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import List, Dict
+
+from pydantic import BaseModel
 
 
 class OriginMapping(BaseModel):
@@ -17,4 +18,10 @@ class DestinyMapping(BaseModel):
 class ExtractLoadMapping(BaseModel):
     origin: OriginMapping
     destiny: DestinyMapping
+    row_count: int
+
+
+class ExtractSelectMapping(BaseModel):
+    columns: List[str]
+    data: List[Dict]
     row_count: int

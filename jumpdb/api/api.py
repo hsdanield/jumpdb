@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from jumpdb.api.routes.api_router import api_router
+from jumpdb.api.api_router import api_router
 
 api = FastAPI(title="jumpdb API")
 api.include_router(api_router)

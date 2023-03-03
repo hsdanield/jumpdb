@@ -3,20 +3,20 @@ from fastapi import status
 
 from typing import List
 
-from jumpdb.serializers.inspector import (ColumnsIn,
-                                          ColumnsOut,
-                                          InspectorIn,
-                                          ConstraintOut,
-                                          FkConstraintOut,
-                                          IndexConstraintOut,
-                                          SummaryTableOut)
+from jumpdb.serializers.inspector_serial import (ColumnsIn,
+                                                 ColumnsOut,
+                                                 InspectorIn,
+                                                 ConstraintOut,
+                                                 FkConstraintOut,
+                                                 IndexConstraintOut,
+                                                 SummaryTableOut)
 
-from jumpdb.service.inserpector.connection_service import (get_columns,
-                                                           get_pk_constraint,
-                                                           get_foreign_keys,
-                                                           get_indexes,
-                                                           get_summary_table,
-                                                           mapping_column_type)
+from jumpdb.service.inserpector.inspector_service import (get_columns,
+                                                          get_pk_constraint,
+                                                          get_foreign_keys,
+                                                          get_indexes,
+                                                          get_summary_table,
+                                                          mapping_column_type)
 
 router = APIRouter()
 

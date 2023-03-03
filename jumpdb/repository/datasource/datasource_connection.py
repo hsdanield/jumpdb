@@ -19,7 +19,7 @@ class DatasourceConnection:
 
     def __create_engine(self):
         try:
-            return create_engine(self.__get_url(), echo=True)
+            return create_engine(self.__get_url(), echo=False)
 
         except Exception as e:
             print(f"Erro ao criar engine {e}")
