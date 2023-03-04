@@ -1,32 +1,47 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from pydantic import BaseModel
 
 
-class OriginMapping(BaseModel):
+class OriginMap(BaseModel):
     database: str
     name: str
     select: str
 
 
-class DestinyMapping(BaseModel):
+class DestinyMap(BaseModel):
     database: str
     name: str
     table: str
 
 
-class ExtractLoadMappingIn(BaseModel):
-    origin: OriginMapping
-    destiny: DestinyMapping
+class ExtLoadInMap(BaseModel):
+    origin: OriginMap
+    destiny: DestinyMap
 
 
-class ExtractLoadMappingOut(BaseModel):
-    origin: OriginMapping
-    destiny: DestinyMapping
+class ExtLoadOutMap(BaseModel):
+    origin: OriginMap
+    destiny: DestinyMap
     row_count: int
 
 
-class ExtractSelectMapping(BaseModel):
+class ExtSltMap(BaseModel):
     columns: List[str]
     data: List[Dict]
     row_count: int
+
+
+class FileMap(BaseModel):
+    path_file: str
+    format_file: str
+
+
+class ExtSltMapSaveFileIn(BaseModel):
+    origin: OriginMap
+    file: FileMap
+
+
+class ExtSltMapSaveFileOut(BaseModel):
+    is_write: bool
+    format_file: str
